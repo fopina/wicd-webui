@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from flask import Flask, render_template,jsonify
 
 import dbus
@@ -13,7 +15,6 @@ def home():
 
 @app.route('/list')
 def list():
-	#result = '#\tBSSID\t\t\tChannel\tEnc\tStr\tESSID\n'
 	results = []
 	for network_id in range(wireless.GetNumberOfNetworks()):
 		result = {}
@@ -26,6 +27,9 @@ def list():
 		result['channel'] = wireless.GetWirelessProperty(network_id, 'channel')
 		result['quality'] = wireless.GetWirelessProperty(network_id, 'quality')
 		result['essid'] = wireless.GetWirelessProperty(network_id, 'essid')
+
+		# check if there's key/passphrase stored (WPA1/2 and WEP only, sorry)
+		result['known'] = (wireless.GetWirelessProperty(network_id, 'key') or wireless.GetWirelessProperty(network_id, 'apsk') or wireless.GetWirelessProperty(network_id, 'apsk') or False) and True
 		results.append(result)
 
 	return jsonify(data = results)
