@@ -1,52 +1,34 @@
-from flask import Flask, make_response
+from flask import Flask, render_template,jsonify
 
 import dbus
 import dbus.service
 import sys
 from wicd import misc
 
-if getattr(dbus, 'version', (0, 0, 0)) < (0, 80, 0):
-	import dbus.glib
-else:
-	from dbus.mainloop.glib import DBusGMainLoop
-	DBusGMainLoop(set_as_default=True)
-
-bus = dbus.SystemBus()
-try:
-	daemon = dbus.Interface(bus.get_object('org.wicd.daemon', '/org/wicd/daemon'),
-			'org.wicd.daemon')
-	wireless = dbus.Interface(bus.get_object('org.wicd.daemon', '/org/wicd/daemon/wireless'),
-			'org.wicd.daemon.wireless')
-	config = dbus.Interface(bus.get_object('org.wicd.daemon', '/org/wicd/daemon/config'),
-			'org.wicd.daemon.config')
-except dbus.DBusException:
-	print 'Error: Could not connect to the daemon. Please make sure it is running.'
-	sys.exit(3)
-
-if not daemon:
-	print 'Error connecting to wicd via D-Bus.  Please make sure the wicd service is running.'
-	sys.exit(3)
-
 app = Flask(__name__)
 
 @app.route('/')
+def home():
+	return render_template('index.html')
+
+@app.route('/list')
 def list():
-	result = '#\tBSSID\t\t\tChannel\tEnc\tStr\tESSID\n'
-
-	for network_id in range(0, wireless.GetNumberOfNetworks()):
-
-		encryption = 'Off'
+	#result = '#\tBSSID\t\t\tChannel\tEnc\tStr\tESSID\n'
+	results = []
+	for network_id in range(wireless.GetNumberOfNetworks()):
+		result = {}
+		result['encryption'] = 'Off'
 		if wireless.GetWirelessProperty(network_id, 'encryption'):
-			encryption = wireless.GetWirelessProperty(network_id, 'encryption_method')
+			result['encryption'] = wireless.GetWirelessProperty(network_id, 'encryption_method')
 
-		result += '%s\t%s\t%s\t%s\t%s\t%s\n' % (network_id,
-			wireless.GetWirelessProperty(network_id, 'bssid'),
-			wireless.GetWirelessProperty(network_id, 'channel'),
-			encryption,
-			wireless.GetWirelessProperty(network_id, 'quality'),
-			wireless.GetWirelessProperty(network_id, 'essid'))
+		result['network_id'] = network_id
+		result['bssid'] = wireless.GetWirelessProperty(network_id, 'bssid')
+		result['channel'] = wireless.GetWirelessProperty(network_id, 'channel')
+		result['quality'] = wireless.GetWirelessProperty(network_id, 'quality')
+		result['essid'] = wireless.GetWirelessProperty(network_id, 'essid')
+		results.append(result)
 
-	return (result, 200, { 'Content-Type': 'text/plain' })
+	return jsonify(data = results)
 
 @app.route('/scan')
 def scan():
@@ -76,7 +58,27 @@ def connect(network_id):
 		)
 
 
+if getattr(dbus, 'version', (0, 0, 0)) < (0, 80, 0):
+	import dbus.glib
+else:
+	from dbus.mainloop.glib import DBusGMainLoop
+	DBusGMainLoop(set_as_default=True)
 
+bus = dbus.SystemBus()
+try:
+	daemon = dbus.Interface(bus.get_object('org.wicd.daemon', '/org/wicd/daemon'),
+			'org.wicd.daemon')
+	wireless = dbus.Interface(bus.get_object('org.wicd.daemon', '/org/wicd/daemon/wireless'),
+			'org.wicd.daemon.wireless')
+	config = dbus.Interface(bus.get_object('org.wicd.daemon', '/org/wicd/daemon/config'),
+			'org.wicd.daemon.config')
+except dbus.DBusException:
+	print 'Error: Could not connect to the daemon. Please make sure it is running.'
+	sys.exit(3)
+
+if not daemon:
+	print 'Error connecting to wicd via D-Bus.  Please make sure the wicd service is running.'
+	sys.exit(3)
 
 if __name__ == "__main__":
-	app.run(host='0.0.0.0', debug = True)
+	app.run(host='0.0.0.0')

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>wicd-webui</title>	 
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap-theme.min.css') }}">
+</head>
+
+<body onload="list_networks();">
+	<div class="container">
+		<div class="panel panel-default">
+			<!-- Default panel contents -->
+			<div class="panel-heading">wicd WebUI</div>
+			<div class="panel-body">
+				<p>Manage your wireless profiles in your browser</p>
+			</div>
+
+			<!-- Table -->
+			<table class="table text-center" id="network-table">
+				<thead>
+					<tr>
+						<th class="text-center">#</th>
+						<th class="text-center">BSSID</th>
+						<th class="text-center">ESSID</th>
+						<th class="text-center">Channel</th>
+						<th class="text-center">Quality</th>
+						<th class="text-center"><a href="javascript:scan_networks();"><span class="glyphicon glyphicon-refresh"></span></a></th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+	<script>
+	function refresh_networks(data) {
+		
+		$('#network-table>tbody').remove();
+		var tbody = $('<tbody/>')
+		$.each( data['data'], function( key, val ) {
+			$("<tr/>", { html: "\
+				<td>" + val["network_id"] + "</td>\
+				<td>" + val["bssid"] + "</td>\
+				<td>" + val["essid"] + "</td>\
+				<td>" + val["channel"] + "</td>\
+				<td>" + val["quality"] + "%</td>\
+				<td>\
+				<a href=\"javascript:connect_to_network(" + val["network_id"] + ");\">\
+				<span class=\"glyphicon glyphicon-log-in\">\
+				</a>\
+				&nbsp;\
+				<a href=\"javascript:connect_to_network(" + val["network_id"] + ");\">\
+				<span class=\"glyphicon glyphicon-cog\">\
+				</a>\
+				</td>\
+				"}).appendTo(tbody);
+		});
+
+		tbody.appendTo("#network-table");
+	};
+
+	function list_networks() {
+		$.getJSON( "list", refresh_networks );
+	};
+
+	function scan_networks() {
+		$.getJSON( "scan", refresh_networks );
+	};
+
+	function connect_to_network(network_id) {
+		$.getJSON( "connect/" + network_id, function(data) {
+			alert('done ' + data);
+		} );
+	};
+	</script>
+</body>
+</html>
