@@ -4,7 +4,7 @@ Simple WebUI to manage wireless networks using [wicd](http://wicd.sourceforge.ne
 
 Why
 -------
-I'm a proud owner of [RPi](http://www.raspberrypi.org)!  
+I'm a proud owner of a [RPi](http://www.raspberrypi.org)!  
 I like it mobile and I don't like having to plug it to a keyboard, screen and ethernet to be able to set it up in a new WiFi location everytime I move it.  
 
 So:
@@ -21,3 +21,5 @@ No cables, no keyboard, no screen, no fuss! :)
 Links
 -------
 [wicd](http://wicd.sourceforge.net) - open source wired and wireless network manager for Linux  
+[Raspberry Pi](http://www.raspberrypi.org) - low cost, credit-card sized computer
+[hostapd](http://hostap.epitest.fi/hostapd/) - user space daemon for access point and authentication servers
