@@ -63,25 +63,23 @@ def connect(network_id):
 
 @app.route('/current')
 def current():
-	if daemon.NeedsExternalCalls():
-		iwconfig = wireless.GetIwconfig()
-	else:
-		iwconfig = ''
 
+	ip = wireless.GetWirelessIP("")
 	result = {}
 
-	network = wireless.GetCurrentNetwork(iwconfig)
-	
-	if network:
-		result['network'] = network
+	if ip:
+		result['ip'] = ip
+		if daemon.NeedsExternalCalls():
+			iwconfig = wireless.GetIwconfig()
+		else:
+			iwconfig = ''
+		result['network'] = wireless.GetCurrentNetwork(iwconfig)
 
 		if daemon.GetSignalDisplayType() == 0:
 			result['quality'] = wireless.GetCurrentSignalStrength(iwconfig)
 		else:
 			result['quality'] = wireless.GetCurrentDBMStrength(iwconfig)
-
-		result['ip'] = wireless.GetWirelessIP("")
-
+			
 	return jsonify(data = result)
 
 # functions
