@@ -61,6 +61,37 @@ def connect(network_id):
 		{ 'Content-Type': 'text/plain' }
 		)
 
+@app.route('/current')
+def current():
+	if daemon.NeedsExternalCalls():
+		iwconfig = wireless.GetIwconfig()
+	else:
+		iwconfig = ''
+
+	result = {}
+
+	network = wireless.GetCurrentNetwork(iwconfig)
+	
+	if network:
+		result['network'] = network
+
+		if daemon.GetSignalDisplayType() == 0:
+			result['quality'] = wireless.GetCurrentSignalStrength(iwconfig)
+		else:
+			result['quality'] = wireless.GetCurrentDBMStrength(iwconfig)
+
+		result['ip'] = wireless.GetWirelessIP("")
+
+	return jsonify(data = result)
+
+# functions
+def is_valid_wireless_network_id(network_id):
+	if not (network_id >= 0 \
+			and network_id < wireless.GetNumberOfNetworks()):
+		return False
+	return True
+
+# init
 
 if getattr(dbus, 'version', (0, 0, 0)) < (0, 80, 0):
 	import dbus.glib
