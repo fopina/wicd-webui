@@ -61,6 +61,12 @@ def connect(network_id):
 		{ 'Content-Type': 'text/plain' }
 		)
 
+@app.route('/disconnect')
+def disconnect():
+	daemon.Disconnect()
+
+	return jsonify(data = None)
+
 @app.route('/current')
 def current():
 
@@ -79,7 +85,7 @@ def current():
 			result['quality'] = wireless.GetCurrentSignalStrength(iwconfig)
 		else:
 			result['quality'] = wireless.GetCurrentDBMStrength(iwconfig)
-			
+
 	return jsonify(data = result)
 
 # functions

@@ -20,20 +20,20 @@
 				<p></p>
 			</div>
 			<!-- Table -->
-			<table class="table text-center" id="network-table">
-				<thead>
-					<tr>
-						<th class="text-center">#</th>
-						<th class="text-center">BSSID</th>
-						<th class="text-center">ESSID</th>
-						<th class="text-center">Encryption</th>
-						<th class="text-center">Quality</th>
-						<th class="text-center"><a href="javascript:scan_networks();"><span class="glyphicon glyphicon-refresh"></span></a></th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
+			<div class="table-responsive">
+				<table class="table text-center" id="network-table">
+					<thead>
+						<tr>
+							<th class="text-center">ESSID</th>
+							<th class="text-center">Encryption</th>
+							<th class="text-center">Quality</th>
+							<th class="text-center"><a href="javascript:scan_networks();"><span class="glyphicon glyphicon-refresh"></span></a></th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 
@@ -49,8 +49,6 @@
 			if (val["known"]) known = "<span class=\"glyphicon glyphicon-ok\">";
 			else known = "";
 			$("<tr/>", { html: "\
-				<td>" + val["network_id"] + "</td>\
-				<td>" + val["bssid"] + "</td>\
 				<td>" + val["essid"] + "</td>\
 				<td>" + val["encryption"] + known + "</td>\
 				<td>" + val["quality"] + "%</td>\
@@ -83,6 +81,12 @@
 		} );
 	};
 
+	function disconnect_network() {
+		$.getJSON( "disconnect", function(data) {
+			$('#current_network>p').text("Currently not connected to any network");
+		} );
+	};
+
 	function current_network() {
 		$.getJSON( "current", function(data) {
 			$('#current_network>p').remove();
@@ -97,6 +101,10 @@
 				newp.append(document.createTextNode(' (IP: '));
 				newp.append($('<i/>').text(data['data']['ip']));
 				newp.append(document.createTextNode(')'));
+				newp.append('\
+					<a href=\"javascript:disconnect_network();\">\
+					<span class=\"glyphicon glyphicon-log-out\">\
+					</a>');
 			}
 			newp.appendTo("#current_network");
 		});
