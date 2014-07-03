@@ -43,24 +43,24 @@
 
 	var statusModal = (function () {
 		var mainDiv = $('<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title" id="statusModalLabel"></h4></div><div class="modal-body" id="statusModalText"></div></div></div></div>')
-	    var textDiv = $('#statusModalText', mainDiv);
-	    var labelDiv = $('#statusModalLabel', mainDiv);
-	    return {
-	        show: function() {
-	        	textDiv.text('Processing...');
-	        	labelDiv.text('Please wait');
-	            mainDiv.modal();
-	        },
-	        hide: function () {
-	            mainDiv.modal('hide');
-	        },
-	        text: function (text) {
-	        	textDiv.text(text);
-	        },
+		var textDiv = $('#statusModalText', mainDiv);
+		var labelDiv = $('#statusModalLabel', mainDiv);
+		return {
+			show: function() {
+				textDiv.text('Processing...');
+				labelDiv.text('Please wait');
+				mainDiv.modal();
+			},
+			hide: function () {
+				mainDiv.modal('hide');
+			},
+			text: function (text) {
+				textDiv.text(text);
+			},
 			label: function (text) {
-	        	labelDiv.text(text);
-	        },
-	    };
+				labelDiv.text(text);
+			},
+		};
 	})();
 
 	function refresh_networks(data) {
@@ -124,15 +124,15 @@
 				newp.append(document.createTextNode(' at '));
 				newp.append($('<i/>').text(data['data']['quality'] + '%'));
 				newp.append(document.createTextNode(' (IP: '));
-				newp.append($('<i/>').text(data['data']['ip']));
-				newp.append(document.createTextNode(')'));
-				newp.append('\
-					<a href=\"javascript:disconnect_network();\">\
-					<span class=\"glyphicon glyphicon-log-out\">\
-					</a>');
-			}
-			newp.appendTo("#current_network");
-		});
+					newp.append($('<i/>').text(data['data']['ip']));
+					newp.append(document.createTextNode(')'));
+					newp.append('\
+						<a href=\"javascript:disconnect_network();\">\
+						<span class=\"glyphicon glyphicon-log-out\">\
+						</a>');
+				}
+				newp.appendTo("#current_network");
+			});
 	};
 	</script>
 </body>
