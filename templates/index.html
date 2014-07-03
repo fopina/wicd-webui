@@ -12,18 +12,6 @@
 </head>
 
 <body onload="current_network(); list_networks();">
-	<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h4 class="modal-title" id="statusModalLabel">Please wait...</h4>
-	      </div>
-	      <div class="modal-body" id="statusModalText">
-	        ...
-	      </div>
-	    </div>
-	  </div>
-	</div>
 	<div class="container" style="margin-top:10px;">
 		<div class="panel panel-default">
 			<!-- Default panel contents -->
@@ -54,9 +42,9 @@
 	<script>
 
 	var statusModal = (function () {
-	    var mainDiv = $('#statusModal');
-	    var textDiv = $('#statusModalText');
-	    var labelDiv = $('#statusModalLabel');
+		var mainDiv = $('<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title" id="statusModalLabel"></h4></div><div class="modal-body" id="statusModalText"></div></div></div></div>')
+	    var textDiv = $('#statusModalText', mainDiv);
+	    var labelDiv = $('#statusModalLabel', mainDiv);
 	    return {
 	        show: function() {
 	        	textDiv.text('Processing...');
