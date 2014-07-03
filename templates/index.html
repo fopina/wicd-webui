@@ -42,13 +42,15 @@
 	<script>
 
 	var statusModal = (function () {
-		var mainDiv = $('<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title" id="statusModalLabel"></h4></div><div class="modal-body" id="statusModalText"></div></div></div></div>')
+		var mainDiv = $('<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><h4 class="modal-title" id="statusModalLabel"></h4></div><div class="modal-body" id="statusModalText"></div></div></div></div>')
 		var textDiv = $('#statusModalText', mainDiv);
 		var labelDiv = $('#statusModalLabel', mainDiv);
+		var closeButton = $('.close', mainDiv);
 		return {
 			show: function() {
 				textDiv.text('Processing...');
 				labelDiv.text('Please wait');
+				closeButton.hide();
 				mainDiv.modal();
 			},
 			hide: function () {
@@ -59,6 +61,9 @@
 			},
 			label: function (text) {
 				labelDiv.text(text);
+			},
+			closeable: function() {
+				closeButton.show();
 			},
 		};
 	})();
@@ -92,23 +97,45 @@
 
 	function list_networks() {
 		statusModal.show();
+		statusModal.text('Listing networks...')
 		$.getJSON( "list", refresh_networks );
 	};
 
 	function scan_networks() {
 		statusModal.show();
+		statusModal.text('Scanning networks...')
 		$.getJSON( "scan", refresh_networks );
 	};
 
 	function connect_to_network(network_id) {
+		statusModal.show();
+		statusModal.text('Connecting...')
 		$.getJSON( "connect/" + network_id, function(data) {
-			alert('done ' + data);
+			statusModal.label('Please wait (' + data['data'] + ')');
+			statusModal.text('Connecting to ' + data['data'] + '...');
+			watch_connection_status();
 		} );
 	};
 
+	function watch_connection_status() {
+		$.getJSON( "status", function(data) {
+			connecting = data['data'][0];
+			message = data['data'][2];
+			statusModal.text(message);
+			if (connecting) setTimeout(watch_connection_status, 1000);
+			else {
+				statusModal.closeable();
+				current_network();
+			};
+		});
+	}
+
 	function disconnect_network() {
+		statusModal.show();
+		statusModal.text('Disconnecting...')
 		$.getJSON( "disconnect", function(data) {
 			$('#current_network>p').text("Currently not connected to any network");
+			statusModal.hide();
 		} );
 	};
 

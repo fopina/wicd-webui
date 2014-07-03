@@ -41,25 +41,18 @@ def scan():
 
 @app.route('/connect/<network_id>')
 def connect(network_id):
-	'''
-	name = wireless.GetWirelessProperty(options.network, 'essid')
-		encryption = wireless.GetWirelessProperty(options.network, 'enctype')
-		print "Connecting to %s with %s on %s" % (name, encryption,
-				wireless.DetectWirelessInterface())
-		wireless.ConnectWireless(options.network)
-
-		check = lambda: wireless.CheckIfWirelessConnecting()
-		status = lambda: wireless.CheckWirelessConnectingStatus()
-		message = lambda: wireless.CheckWirelessConnectingMessage()
-	'''
 	network_id = int(network_id)
 	wireless.ConnectWireless(network_id)
 
-	return (
-		'connecting to %s' % wireless.GetWirelessProperty(network_id, 'essid'),
-		200,
-		{ 'Content-Type': 'text/plain' }
-		)
+	return jsonify(data = wireless.GetWirelessProperty(network_id, 'essid'))
+
+@app.route('/status')
+def status():
+	check = wireless.CheckIfWirelessConnecting()
+	status = wireless.CheckWirelessConnectingStatus()
+	message = wireless.CheckWirelessConnectingMessage()
+
+	return jsonify(data = (check, status, message))
 
 @app.route('/disconnect')
 def disconnect():
