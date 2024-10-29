@@ -1,3 +1,7 @@
+> **ARCHIVED**  
+> Feel free to fork or do whatever you want with this code
+> 
+
 wicd-webui
 ==========
 Simple WebUI to manage wireless networks using [wicd](http://wicd.sourceforge.net)
